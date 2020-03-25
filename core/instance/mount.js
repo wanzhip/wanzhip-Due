@@ -4,6 +4,9 @@ import {
     getTemplate2VnodeMap,
     getVnode2TemplateMap
 } from "./render.js";
+import {
+    vmodel
+} from "./grammer/vmodel.js";
 
 export function initMount(Due) {
     Due.prototype.$mount = function (el) {
@@ -25,6 +28,8 @@ export function mount(vm, el) {
 
 function constructVNode(vm, ele, parent) {
     //深度优先搜索
+
+    analysisAttr(vm, ele, parent);
     let vnode = null;
     let children = [];
     let text = getNodeText(ele); //文本  只有#TEXT节点有文本  其他叫文本子节点
@@ -32,9 +37,7 @@ function constructVNode(vm, ele, parent) {
     let nodeType = ele.nodeType;
     let tag = ele.nodeName;
     vnode = new VNode(tag, ele, children, text, data, parent, nodeType);
-    console.log(parent, vnode, "66")
     let childs = vnode.ele.childNodes;
-    console.log(childs, 555)
     for (let i = 0; i < childs.length; i++) {
         let childNodes = constructVNode(vm, childs[i], vnode);
         if (childNodes instanceof VNode) {
@@ -54,5 +57,16 @@ function getNodeText(ele) {
         return ele.nodeValue;
     } else {
         return "";
+    }
+}
+
+function analysisAttr(vm, ele, parent) {
+    if (ele.nodeType == 1) {
+        let attrNames = ele.getAttributeNames();
+        console.log(ele, 111)
+        if (attrNames.indexOf("v-model") > -1) {
+            console.log(vm, ele.value, ele.getAttribute("v-model"))
+            vmodel(vm, ele, ele.getAttribute("v-model"));
+        }
     }
 }

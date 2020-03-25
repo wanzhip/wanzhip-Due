@@ -8,7 +8,6 @@ import {
 let uid = 0;
 //初始化Due
 export function initMixin(Due) {
-    console.log(Due)
     Due.prototype._init = function (options) {
         const vm = this;
         vm.uid = uid++;

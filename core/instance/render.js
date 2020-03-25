@@ -16,7 +16,6 @@ export function renderData(vm, data) {
     let vnodes = template2Vnode.get(data);
     if (vnodes != null) {
         for (let i = 0; i < vnodes.length; i++) {
-            console.log(vnodes[i]);
             renderNode(vm, vnodes[i]);
         }
     }
@@ -29,12 +28,21 @@ export function renderNode(vm, vnode) {
             let result = vnode.text;
             for (let i = 0; i < templates.length; i++) {
                 let templateValue = getTemplateValue([vm._data, vnode.env], templates[i]);
-                console.log(templateValue);
                 if (templateValue) {
                     result = result.replace("{{" + templates[i] + "}}", templateValue);
                 }
             }
             vnode.ele.nodeValue = result;
+        }
+    } else if (vnode.nodeType == 1 && vnode.tag == "INPUT") {
+        let templates = vnode2Template.get(vnode);
+        if (templates) {
+            for (let i = 0; i < templates.length; i++) {
+                let templateValue = getTemplateValue([vm._data, vnode.env], templates[i]);
+                if (templateValue) {
+                    vnode.ele.value = templateValue;
+                }
+            }
         }
     } else {
         for (let i = 0; i < vnode.children.length; i++) {
@@ -60,6 +68,7 @@ export function prepareRender(vm, vnode) {
     if (vnode.nodeType == 3) {
         analysisTeplateString(vnode);
     };
+    analysisAttr(vm, vnode);
     if (vnode.nodeType == 1) {
         for (let i = 0; i < vnode.children.length; i++) {
             //遍历
@@ -70,9 +79,7 @@ export function prepareRender(vm, vnode) {
 
 //分析文本
 function analysisTeplateString(vnode) {
-    console.log(vnode.text);
     let templateString = vnode.text.match(/{{[a-zA-Z0-9_.]+}}/g);
-    console.log(templateString);
     for (let i = 0; templateString && i < templateString.length; i++) {
         setTemplate2Vnode(templateString[i], vnode);
         setVnode2Template(templateString[i], vnode);
@@ -84,7 +91,6 @@ function analysisTeplateString(vnode) {
 function setTemplate2Vnode(template, vnode) {
     let templateName = getTemplateName(template);
     let vnodeSet = template2Vnode.get(templateName);
-    console.log(vnodeSet, "***")
     if (vnodeSet) {
         vnodeSet.push(vnode);
     } else {
@@ -113,6 +119,18 @@ function getTemplateName(template) {
     }
 }
 
+
+function analysisAttr(vm, vnode) {
+    if (vnode.nodeType != 1) {
+        return;
+    }
+    let attrName = vnode.ele.getAttributeNames();
+    if (attrName.indexOf("v-model") > -1) {
+        setTemplate2Vnode(vnode.ele.getAttribute("v-model"), vnode);
+        setVnode2Template(vnode.ele.getAttribute("v-model"), vnode);
+    }
+
+};
 export function getTemplate2VnodeMap() {
     return template2Vnode;
 };

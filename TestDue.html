@@ -12,7 +12,8 @@
     你好，{{content}},{{description}}</br>
     <span>{{description}}</span></br>
     {{aaa.y.x}}</br>
-    {{bbb}}
+    <li v-model=""></li>
+    <input type="text" v-model="aaa.m" />{{aaa.m}}
   </div>
   <script type="module">
     import Due from "./core/index.js";
@@ -25,7 +26,8 @@
           aaa: {
             y: {
               x: 222
-            }
+            },
+            m:5
           },
           bbb: [
             { student: "panda", age: 20 },

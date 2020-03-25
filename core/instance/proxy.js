@@ -12,9 +12,7 @@ export function constructProxy(vm, obj, namespace) {
         proxyObj = new Array(obj.length);
         for (let i = 0; i < obj.length; i++) {
             proxyObj[i] = constructProxy(vm, obj[i], namespace);
-            console.log(obj[i])
         };
-        console.log(proxyObj, "7777")
         proxyObj = proxyArr(vm, obj, namespace); //数组代理
     } else if (obj instanceof Object) {
         //是否为对象
@@ -57,7 +55,6 @@ function constructObjProxy(vm, obj, namespace) {
         }
 
     }
-    console.log(proxyObj, 999)
     return proxyObj;
 };
 
@@ -81,7 +78,6 @@ function proxyArr(vm, arr, namespace) {
             for (let i = 0; i < arr.length; i++) {
                 result += arr[i] + ", ";
             }
-            console.log(result, "**")
             return result.substring(0, result.length - 2);
         },
         push() {},
