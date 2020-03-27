@@ -12,7 +12,13 @@
     你好，{{content}},{{description}}</br>
     <span>{{description}}</span></br>
     {{aaa.y.x}}</br>
-    <li v-model=""></li>
+
+
+    <ul>
+      <li v-for="(value) in list">
+        姓名：{{value.student}},年龄：{{value.age}}</br>
+      </li>
+    </ul>
     <input type="text" v-model="aaa.m" />{{aaa.m}}
   </div>
   <script type="module">
@@ -29,7 +35,7 @@
             },
             m:5
           },
-          bbb: [
+          list: [
             { student: "panda", age: 20 },
             { student: "monkey", age: 21 }
           ]

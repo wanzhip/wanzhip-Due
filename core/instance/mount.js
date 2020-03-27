@@ -7,6 +7,12 @@ import {
 import {
     vmodel
 } from "./grammer/vmodel.js";
+import {
+    mergeAttr
+} from "../util/ObjectUtil.js";
+import {
+    vforInit
+} from "./grammer/vfor.js";
 
 export function initMount(Due) {
     Due.prototype.$mount = function (el) {
@@ -37,6 +43,12 @@ function constructVNode(vm, ele, parent) {
     let nodeType = ele.nodeType;
     let tag = ele.nodeName;
     vnode = new VNode(tag, ele, children, text, data, parent, nodeType);
+    if (ele.nodeType == 1 && ele.getAttribute("env")) {
+        vnode.env = mergeAttr(vnode.env, JSON.parse(ele.getAttribute("env")));
+    } else {
+        vnode.env = mergeAttr(vnode.env, parent ? parent.env : {});
+    }
+
     let childs = vnode.ele.childNodes;
     for (let i = 0; i < childs.length; i++) {
         let childNodes = constructVNode(vm, childs[i], vnode);
@@ -60,6 +72,7 @@ function getNodeText(ele) {
     }
 }
 
+//分析指令属性对应值
 function analysisAttr(vm, ele, parent) {
     if (ele.nodeType == 1) {
         let attrNames = ele.getAttributeNames();
@@ -67,6 +80,9 @@ function analysisAttr(vm, ele, parent) {
         if (attrNames.indexOf("v-model") > -1) {
             console.log(vm, ele.value, ele.getAttribute("v-model"))
             vmodel(vm, ele, ele.getAttribute("v-model"));
+        }
+        if (attrNames.indexOf("v-for") > -1) {
+            vforInit(vm, ele, parent, ele.getAttribute("v-for"));
         }
     }
 }
